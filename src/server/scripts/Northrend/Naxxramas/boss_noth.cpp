@@ -102,8 +102,7 @@ public:
                 events.ScheduleEvent(EVENT_BALCONY, 110000);
                 events.ScheduleEvent(EVENT_CURSE, 10000+rand()%15000);
                 events.ScheduleEvent(EVENT_WARRIOR, 30000);
-                if (GetDifficulty() == RAID_DIFFICULTY_25MAN_NORMAL)
-                    events.ScheduleEvent(EVENT_BLINK, urand(20000, 40000));
+                events.ScheduleEvent(EVENT_BLINK, urand(20000, 40000));
             }
         }
 

@@ -664,7 +664,7 @@ public:
                 {
                     pKelthuzadAI->spawns.Summon(sum);
                     sum->GetMotionMaster()->MoveRandom(9.0f);
-                    sum->SetReactState(REACT_DEFENSIVE);
+                    sum->SetReactState(REACT_AGGRESSIVE);
                 }
             }
             for (uint8 i = 0; i < MAX_WASTES; ++i)
@@ -673,7 +673,7 @@ public:
                 {
                     pKelthuzadAI->spawns.Summon(sum);
                     sum->GetMotionMaster()->MoveRandom(5.0f);
-                    sum->SetReactState(REACT_DEFENSIVE);
+					sum->SetReactState(REACT_AGGRESSIVE);
                 }
             }
             for (uint8 i = 0; i < MAX_WEAVERS; ++i)
@@ -682,7 +682,7 @@ public:
                 {
                     pKelthuzadAI->spawns.Summon(sum);
                     sum->GetMotionMaster()->MoveRandom(9.0f);
-                    sum->SetReactState(REACT_DEFENSIVE);
+					sum->SetReactState(REACT_AGGRESSIVE);
                 }
             }
         }
@@ -702,12 +702,14 @@ class npc_kelthuzad_abomination : public CreatureScript
             {
                 _instance = creature->GetInstanceScript();
             }
+			bool enraged;
 
             void Reset() override
             {
                 _events.Reset();
                 _events.ScheduleEvent(EVENT_MORTAL_WOUND, urand(2000, 5000));
-                DoCast(me, SPELL_FRENZY, true);
+				enraged = false;
+                //DoCast(me, SPELL_FRENZY, true); Do not cast frenzy at start
             }
 
             void UpdateAI(uint32 diff) override
@@ -716,6 +718,11 @@ class npc_kelthuzad_abomination : public CreatureScript
                     return;
 
                 _events.Update(diff);
+
+				if (HealthBelowPct(20) && !enraged){
+					enraged = true;
+					DoCast(me, SPELL_FRENZY, true);
+				}
 
                 while (uint32 eventId = _events.ExecuteEvent())
                 {

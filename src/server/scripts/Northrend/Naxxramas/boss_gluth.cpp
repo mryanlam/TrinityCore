@@ -103,11 +103,13 @@ public:
 			Map::PlayerList const &PlayerList = map->GetPlayers();
 			for (Map::PlayerList::const_iterator itr = PlayerList.begin(); itr != PlayerList.end(); ++itr)
 				if (Player* player = itr->GetSource())
-					if (player->IsInRange(me, 0, 10, true))
+					if (player->IsInRange(me, 0, 80, true))
 					{
 						int32 damage = int32(player->GetHealth()) - int32(player->CountPctFromMaxHealth(5));
 						if (damage > 0)
-							me->CastCustomSpell(28375, SPELLVALUE_BASE_POINT0, damage, player, true);
+							//me->CastCustomSpell(28375, SPELLVALUE_BASE_POINT0, damage, player, true);
+							me->DealDamage(player, damage, 0, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL);
+
 					}
 		}
 
@@ -181,7 +183,8 @@ public:
 								//hack
 								int32 damage = int32(minion->GetHealth()) - int32(minion->CountPctFromMaxHealth(0.00095));
 								if (damage > 0)
-									me->CastCustomSpell(28375, SPELLVALUE_BASE_POINT0, damage, minion, true);
+									//me->CastCustomSpell(28375, SPELLVALUE_BASE_POINT0, damage, minion, true);
+									me->DealDamage(minion, damage, 0, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL);
 								minion->SetWalk(true);
 								AttackGluth(minion);
 							}

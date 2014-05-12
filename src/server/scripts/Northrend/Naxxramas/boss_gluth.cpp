@@ -51,7 +51,7 @@ enum Events
 	EVENT_EATEN,
 };
 
-#define EMOTE_NEARBY    " spots a nearby zombie to devour!"
+#define EMOTE_NEARBY    "Gluth spots a nearby zombie to devour!"
 
 class boss_gluth : public CreatureScript
 {
@@ -105,11 +105,13 @@ public:
 				if (Player* player = itr->GetSource())
 					if (player->IsInRange(me, 0, 80, true))
 					{
-						int32 damage = int32(player->GetHealth()) - int32(player->CountPctFromMaxHealth(5));
-						if (damage > 0)
-							//me->CastCustomSpell(28375, SPELLVALUE_BASE_POINT0, damage, player, true);
-							me->DealDamage(player, damage, 0, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL);
-
+						//hacky
+						int32 endHealth = int32(player->GetHealth()) * 0.05;
+						int32 maxHealth = int32(player->GetMaxHealth());
+						//me->CastCustomSpell(28375, SPELLVALUE_BASE_POINT0, damage, minion, true);
+						player->SetMaxHealth(endHealth);
+						player->SetMaxHealth(maxHealth);
+							
 					}
 		}
 
@@ -180,11 +182,12 @@ public:
 							Creature* minion = Unit::GetCreature(*me, *itr);
 							if (minion && minion->IsAlive())
 							{
-								//hack
-								int32 damage = int32(minion->GetHealth()) - int32(minion->CountPctFromMaxHealth(0.00095));
-								if (damage > 0)
-									//me->CastCustomSpell(28375, SPELLVALUE_BASE_POINT0, damage, minion, true);
-									me->DealDamage(minion, damage, 0, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL);
+								//hacky
+								int32 endHealth = int32(minion->GetHealth()) * 0.05;
+								int32 maxHealth = int32(minion->GetMaxHealth());
+								//me->CastCustomSpell(28375, SPELLVALUE_BASE_POINT0, damage, minion, true);
+								minion->SetMaxHealth(endHealth);
+								minion->SetMaxHealth(maxHealth);
 								minion->SetWalk(true);
 								AttackGluth(minion);
 							}

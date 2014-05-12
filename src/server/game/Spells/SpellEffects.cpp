@@ -363,6 +363,75 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                         damage = (m_caster->getLevel() - 60) * 4 + 60;
                         break;
                     }
+					// Positive/Negative Charge
+                     // Thaddius' charges, don't deal dmg to units with the same charge but give them the buff:
+                    // Positive Charge
+                    case 28062:
+                    {
+                        // remove pet from damage and buff list
+                        if (unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        {
+                              damage = 0;
+                              break;
+                        }
+                        // If target is not (+) charged, then just deal dmg
+                        if (!unitTarget->HasAura(28059))
+                            break;
+ 
+                        if (m_caster != unitTarget)
+                            m_caster->CastSpell(m_caster, 29659, true);
+ 
+                        damage = 0;
+                        break;
+                    }
+                    // Negative Charge
+                    case 28085:
+                    {
+                        // remove pet from damage and buff list
+                        if (unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        {
+                              damage = 0;
+                              break;
+                        }
+                        // If target is not (-) charged, then just deal dmg
+                        if (!unitTarget->HasAura(28084))
+                            break;
+ 
+                        if (m_caster != unitTarget)
+                            m_caster->CastSpell(m_caster, 29660, true);
+ 
+                        damage = 0;
+                        break;
+                    }
+                    case 39090:
+                    case 39093:
+                        if(!m_triggeredByAuraSpell)
+                            break;
+                        if(unitTarget != m_caster)
+                        {
+                            uint8 count = 0;
+                            for(std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
+                                if(ihit->targetGUID != m_caster->GetGUID())
+                                    if(Player* target = ObjectAccessor::GetPlayer(*m_caster, ihit->targetGUID))
+                                        if(target->HasAura(m_triggeredByAuraSpell->Id))
+                                            ++count;
+                            if(count)
+                            {
+                                uint32 spellId = 0;
+                                switch(m_spellInfo->Id)
+                                {
+                                    case 28062: spellId = 29659; break;
+                                    case 28085: spellId = 29660; break;
+                                    case 39090: spellId = 39089; break;
+                                    case 39093: spellId = 39092; break;
+                                }
+                                m_caster->SetAuraStack(spellId, m_caster, count);
+                            }
+                        }
+
+                        if(unitTarget->HasAura(m_triggeredByAuraSpell->Id))
+                            damage = 0;
+                        break;
                 }
                 break;
             }
@@ -685,6 +754,21 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
     // selection by spell family
     switch (m_spellInfo->SpellFamilyName)
     {
+		case SPELLFAMILY_GENERIC:
+			switch (m_spellInfo->Id)
+			{
+                // Polarity Shift
+                case 28089:
+                    if(unitTarget)
+                        unitTarget->CastSpell(unitTarget, roll_chance_i(50) ? 28059 : 28084, true, NULL, NULL, m_caster->GetGUID());
+                    break;
+                // Polarity Shift
+                case 39096:
+                    if(unitTarget)
+                        unitTarget->CastSpell(unitTarget, roll_chance_i(50) ? 39088 : 39091, true, NULL, NULL, m_caster->GetGUID());
+                    break;
+			}
+			break;
         case SPELLFAMILY_PALADIN:
             switch (m_spellInfo->Id)
             {

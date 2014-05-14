@@ -218,6 +218,21 @@ public:
             return uint32(polaritySwitch);
         }
 
+        //Very hacky solution.
+        void RemoveDebuffs() 
+        {
+            Map* map = me->GetMap();
+            Map::PlayerList const &PlayerList = map->GetPlayers();
+            for (Map::PlayerList::const_iterator itr = PlayerList.begin(); itr != PlayerList.end(); ++itr)
+                if (Player* player = itr->GetSource())
+                    if (player->IsInRange(me, 0, 80, true))
+                    {
+                        //Remove both the positive and negative aura
+                        player->RemoveAurasDueToSpell(SPELL_POSITIVE_POLARITY);
+                        player->RemoveAurasDueToSpell(SPELL_NEGATIVE_POLARITY);
+                    }
+        }
+		
         void UpdateAI(uint32 diff) override
         {
             if (checkFeugenAlive && checkStalaggAlive)
@@ -254,6 +269,7 @@ public:
                 switch (eventId)
                 {
                     case EVENT_SHIFT:
+						RemoveDebuffs();
                         DoCastAOE(SPELL_POLARITY_SHIFT);
                         events.ScheduleEvent(EVENT_SHIFT, 30000);
                         return;

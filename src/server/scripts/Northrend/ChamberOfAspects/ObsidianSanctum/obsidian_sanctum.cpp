@@ -168,6 +168,8 @@ struct dummy_dragonAI : public ScriptedAI
         instance = creature->GetInstanceScript();
     }
 
+    uint64 m_guidPortal;
+
     void Reset() override
     {
         if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
@@ -175,9 +177,13 @@ struct dummy_dragonAI : public ScriptedAI
 
         events.Reset();
         waypointId = 0;
+        MoveNextTimer = 500;
         portalRespawnTime = 30000;
         _canMoveFree = false;
         _canLoot = true;
+        m_guidPortal = 0;
+        me->SetCanFly(false);
+        me->SetDisableGravity(false);
     }
 
     void EnterCombat(Unit* /*who*/) override
@@ -222,9 +228,11 @@ struct dummy_dragonAI : public ScriptedAI
             }
 
             _canMoveFree = false;
+            me->SetCanFly(false);
+            me->SetDisableGravity(false);
             return;
         }
-
+        
         // increase
         waypointId = pointId + 1;
 
@@ -399,6 +407,7 @@ struct dummy_dragonAI : public ScriptedAI
         InstanceScript* instance;
         EventMap events;
         uint32   waypointId;
+        uint32      MoveNextTimer;
         int32    portalRespawnTime;
         bool     _canMoveFree;
         bool     _canLoot;
